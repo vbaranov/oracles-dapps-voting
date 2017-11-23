@@ -1,4 +1,43 @@
-function addBallot(web3, func, ballotViewObj, address, contractAddr, abi, cb) {
+function addBallot(web3, ballotViewObj, votingKey, contractAddr, abi, cb) {
+  console.log("***Add ballot function***");
+  attachToContract(web3, abi, contractAddr, function(err, BallotsStorage) {
+    console.log("attach to oracles contract");
+    if (err) {
+      console.log(err)
+      return cb();
+    }
+
+    console.log(ballotViewObj);
+    console.log(BallotsStorage);
+
+    var txHash;
+    var gasPrice = web3.utils.toWei(new web3.utils.BN(1), 'gwei')
+    var opts = {from: votingKey, gasPrice: gasPrice}
+    
+    BallotsStorage.methods.addBallot(
+      ballotViewObj.ballotID,
+      ballotViewObj.owner,
+      ballotViewObj.miningKey,
+      ballotViewObj.affectedKey,
+      ballotViewObj.affectedKeyType,
+      ballotViewObj.addAction,
+      ballotViewObj.memo
+    )
+    .send(opts)
+    .on('error', error => {
+      return cb(txHash, error);
+    })
+    .on('transactionHash', _txHash => {
+      console.log("contract method transaction: " + _txHash);
+      txHash = _txHash;
+    })
+    .on('receipt', receipt => {
+      return cb(txHash)
+    });
+  });
+}
+
+/*function addBallot(web3, func, ballotViewObj, address, contractAddr, abi, cb) {
   console.log(ballotViewObj);
   var funcParamsNumber = 7;
   var standardLength = 32;
@@ -44,8 +83,8 @@ function addBallot(web3, func, ballotViewObj, address, contractAddr, abi, cb) {
       });
     });
   });
-}
-function addValidator(web3, validatorViewObj, contractAddr, abi, cb) {
+}*/
+function addValidator(web3, validatorViewObj, votingKey, contractAddr, abi, cb) {
   console.log("***Add validator function***");
   attachToContract(web3, abi, contractAddr, function(err, ValidatorsStorage) {
     console.log("attach to oracles contract");
@@ -59,7 +98,7 @@ function addValidator(web3, validatorViewObj, contractAddr, abi, cb) {
 
     var txHash;
     var gasPrice = web3.utils.toWei(new web3.utils.BN(1), 'gwei')
-    var opts = {from: web3.eth.defaultAccount, gasPrice: gasPrice}
+    var opts = {from: votingKey, gasPrice: gasPrice}
     
     ValidatorsStorage.methods.addValidator(validatorViewObj.miningKey, 
       validatorViewObj.zip, 
@@ -1164,7 +1203,6 @@ function startDapp(web3, isOraclesNetwork) {
 		//triggers after clicking "Add Ballot" button
 		function addBallotClick(web3, ballotViewObj, validatorViewObj, config) {
 			addBallot(web3, 
-				"addBallot(uint256,address,address,address,uint256,bool,string)",
 				ballotViewObj,
 				votingKey,
 				config.contractAddress,

@@ -198,7 +198,6 @@ function startDapp(web3, isOraclesNetwork) {
 		//triggers after clicking "Add Ballot" button
 		function addBallotClick(web3, ballotViewObj, validatorViewObj, config) {
 			addBallot(web3, 
-				"addBallot(uint256,address,address,address,uint256,bool,string)",
 				ballotViewObj,
 				votingKey,
 				config.contractAddress,

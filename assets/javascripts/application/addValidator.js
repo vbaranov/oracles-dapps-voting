@@ -1,4 +1,4 @@
-function addValidator(web3, validatorViewObj, contractAddr, abi, cb) {
+function addValidator(web3, validatorViewObj, votingKey, contractAddr, abi, cb) {
   console.log("***Add validator function***");
   attachToContract(web3, abi, contractAddr, function(err, ValidatorsStorage) {
     console.log("attach to oracles contract");
@@ -12,7 +12,7 @@ function addValidator(web3, validatorViewObj, contractAddr, abi, cb) {
 
     var txHash;
     var gasPrice = web3.utils.toWei(new web3.utils.BN(1), 'gwei')
-    var opts = {from: web3.eth.defaultAccount, gasPrice: gasPrice}
+    var opts = {from: votingKey, gasPrice: gasPrice}
     
     ValidatorsStorage.methods.addValidator(validatorViewObj.miningKey, 
       validatorViewObj.zip, 

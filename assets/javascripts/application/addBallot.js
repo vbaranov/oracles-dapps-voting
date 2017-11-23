@@ -1,4 +1,43 @@
-function addBallot(web3, func, ballotViewObj, address, contractAddr, abi, cb) {
+function addBallot(web3, ballotViewObj, votingKey, contractAddr, abi, cb) {
+  console.log("***Add ballot function***");
+  attachToContract(web3, abi, contractAddr, function(err, BallotsStorage) {
+    console.log("attach to oracles contract");
+    if (err) {
+      console.log(err)
+      return cb();
+    }
+
+    console.log(ballotViewObj);
+    console.log(BallotsStorage);
+
+    var txHash;
+    var gasPrice = web3.utils.toWei(new web3.utils.BN(1), 'gwei')
+    var opts = {from: votingKey, gasPrice: gasPrice}
+    
+    BallotsStorage.methods.addBallot(
+      ballotViewObj.ballotID,
+      ballotViewObj.owner,
+      ballotViewObj.miningKey,
+      ballotViewObj.affectedKey,
+      ballotViewObj.affectedKeyType,
+      ballotViewObj.addAction,
+      ballotViewObj.memo
+    )
+    .send(opts)
+    .on('error', error => {
+      return cb(txHash, error);
+    })
+    .on('transactionHash', _txHash => {
+      console.log("contract method transaction: " + _txHash);
+      txHash = _txHash;
+    })
+    .on('receipt', receipt => {
+      return cb(txHash)
+    });
+  });
+}
+
+/*function addBallot(web3, func, ballotViewObj, address, contractAddr, abi, cb) {
   console.log(ballotViewObj);
   var funcParamsNumber = 7;
   var standardLength = 32;
@@ -44,4 +83,4 @@ function addBallot(web3, func, ballotViewObj, address, contractAddr, abi, cb) {
       });
     });
   });
-}
+}*/
