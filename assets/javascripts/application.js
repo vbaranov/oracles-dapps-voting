@@ -1,39 +1,37 @@
 function addBallot(web3, ballotViewObj, votingKey, contractAddr, abi, cb) {
   console.log("***Add ballot function***");
-  attachToContract(web3, abi, contractAddr, function(err, BallotsStorage) {
-    console.log("attach to oracles contract");
-    if (err) {
-      console.log(err)
-      return cb();
-    }
+  let BallotsStorage = attachToContract(web3, abi, contractAddr)
+  console.log("attach to oracles contract");
+  if (!BallotsStorage) {
+    return cb();
+  }
 
-    console.log(ballotViewObj);
-    console.log(BallotsStorage);
+  console.log(ballotViewObj);
+  console.log(BallotsStorage);
 
-    var txHash;
-    var gasPrice = web3.utils.toWei(new web3.utils.BN(1), 'gwei')
-    var opts = {from: votingKey, gasPrice: gasPrice}
-    
-    BallotsStorage.methods.addBallot(
-      ballotViewObj.ballotID,
-      ballotViewObj.owner,
-      ballotViewObj.miningKey,
-      ballotViewObj.affectedKey,
-      ballotViewObj.affectedKeyType,
-      ballotViewObj.addAction,
-      ballotViewObj.memo
-    )
-    .send(opts)
-    .on('error', error => {
-      return cb(txHash, error);
-    })
-    .on('transactionHash', _txHash => {
-      console.log("contract method transaction: " + _txHash);
-      txHash = _txHash;
-    })
-    .on('receipt', receipt => {
-      return cb(txHash)
-    });
+  var txHash;
+  var gasPrice = web3.utils.toWei(new web3.utils.BN(1), 'gwei')
+  var opts = {from: votingKey, gasPrice: gasPrice}
+  
+  BallotsStorage.methods.addBallot(
+    ballotViewObj.ballotID,
+    ballotViewObj.owner,
+    ballotViewObj.miningKey,
+    ballotViewObj.affectedKey,
+    ballotViewObj.affectedKeyType,
+    ballotViewObj.addAction,
+    ballotViewObj.memo
+  )
+  .send(opts)
+  .on('error', error => {
+    return cb(txHash, error);
+  })
+  .on('transactionHash', _txHash => {
+    console.log("contract method transaction: " + _txHash);
+    txHash = _txHash;
+  })
+  .on('receipt', receipt => {
+    return cb(txHash)
   });
 }
 
@@ -86,39 +84,37 @@ function addBallot(web3, ballotViewObj, votingKey, contractAddr, abi, cb) {
 }*/
 function addValidator(web3, validatorViewObj, votingKey, contractAddr, abi, cb) {
   console.log("***Add validator function***");
-  attachToContract(web3, abi, contractAddr, function(err, ValidatorsStorage) {
-    console.log("attach to oracles contract");
-    if (err) {
-      console.log(err)
-      return cb();
-    }
+  let ValidatorsStorage = attachToContract(web3, abi, contractAddr)
+  console.log("attach to oracles contract");
+  if (!ValidatorsStorage) {
+    return cb();
+  }
 
-    console.log(validatorViewObj);
-    console.log(ValidatorsStorage);
+  console.log(validatorViewObj);
+  console.log(ValidatorsStorage);
 
-    var txHash;
-    var gasPrice = web3.utils.toWei(new web3.utils.BN(1), 'gwei')
-    var opts = {from: votingKey, gasPrice: gasPrice}
-    
-    ValidatorsStorage.methods.addValidator(validatorViewObj.miningKey, 
-      validatorViewObj.zip, 
-      validatorViewObj.licenseID,
-      validatorViewObj.licenseExpiredAt,
-      validatorViewObj.fullName,
-      validatorViewObj.streetName,
-      validatorViewObj.state
-      )
-    .send(opts)
-    .on('error', error => {
-      return cb(txHash, error);
-    })
-    .on('transactionHash', _txHash => {
-      console.log("contract method transaction: " + _txHash);
-      txHash = _txHash;
-    })
-    .on('receipt', receipt => {
-      return cb(txHash)
-    });
+  var txHash;
+  var gasPrice = web3.utils.toWei(new web3.utils.BN(1), 'gwei')
+  var opts = {from: votingKey, gasPrice: gasPrice}
+  
+  ValidatorsStorage.methods.addValidator(validatorViewObj.miningKey, 
+    validatorViewObj.zip, 
+    validatorViewObj.licenseID,
+    validatorViewObj.licenseExpiredAt,
+    validatorViewObj.fullName,
+    validatorViewObj.streetName,
+    validatorViewObj.state
+    )
+  .send(opts)
+  .on('error', error => {
+    return cb(txHash, error);
+  })
+  .on('transactionHash', _txHash => {
+    console.log("contract method transaction: " + _txHash);
+    txHash = _txHash;
+  })
+  .on('receipt', receipt => {
+    return cb(txHash)
   });
 }
 function showAlert(err, msg) {
@@ -144,13 +140,15 @@ function generateBallotID() {
 	var max = 99999999;
   	return Math.floor(Math.random() * (max - min)) + min;
 }
-function attachToContract(web3, abi, addr, cb) {
+function attachToContract(web3, abi, addr) {
+  console.log("abi: ")
+  console.log(abi)
   web3.eth.defaultAccount = web3.eth.accounts[0];
   console.log("web3.eth.defaultAccount:" + web3.eth.defaultAccount);
   
-  var contractInstance = new web3.eth.Contract(abi, addr);
+  let contractInstance = new web3.eth.Contract(abi, addr);
   
-  if (cb) cb(null, contractInstance);
+  return contractInstance;
 }
 
 function SHA3Encrypt(web3, str, cb) {
@@ -296,19 +294,17 @@ async function checkNetworkVersion(web3, cb) {
   })
 }
 function checkVotingKey(web3, votingKey, contractAddr, abi, cb) {
-  attachToContract(web3, abi, contractAddr, function(err, oraclesContract) {
-    console.log("attach to oracles contract");
+  let ValidatorsStorage = attachToContract(web3, abi, contractAddr)
+  console.log("attach to oracles contract");
+  if (!ValidatorsStorage) {
+    return cb();
+  }
+
+  ValidatorsStorage.methods.checkVotingKeyValidity(votingKey).call(function(err, isActive) {
     if (err) {
       console.log(err)
-      return cb();
     }
-
-    oraclesContract.methods.checkVotingKey(votingKey).call(function(err, isActive) {
-      if (err) {
-        console.log(err)
-      }
-      cb(isActive);
-    })
+    cb(isActive);
   })
 }
 function hex2a(hexx) {
@@ -1024,7 +1020,6 @@ function startDapp(web3, isOraclesNetwork) {
 			if (accounts.length == 1) {
 				var possiblePayoutKey = accounts[0];
 				checkVotingKey(web3,
-				"checkVotingKeyValidity(address)", 
 				possiblePayoutKey,
 				config.contractAddress,
 				config.abi,

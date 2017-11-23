@@ -19,7 +19,6 @@ function startDapp(web3, isOraclesNetwork) {
 			if (accounts.length == 1) {
 				var possiblePayoutKey = accounts[0];
 				checkVotingKey(web3,
-				"checkVotingKeyValidity(address)", 
 				possiblePayoutKey,
 				config.contractAddress,
 				config.abi,
