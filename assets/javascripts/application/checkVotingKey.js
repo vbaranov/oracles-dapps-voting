@@ -1,4 +1,4 @@
-function checkVotingKey(web3, func, key, contractAddr, cb) {
+function checkVotingKey(web3, func, key, contractAddr, abi, cb) {
   var funcParamsNumber = 1;
   var standardLength = 32;
 

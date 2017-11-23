@@ -252,7 +252,7 @@ async function checkNetworkVersion(web3, cb) {
     }
   })
 }
-function checkVotingKey(web3, func, key, contractAddr, cb) {
+function checkVotingKey(web3, func, key, contractAddr, abi, cb) {
   var funcParamsNumber = 1;
   var standardLength = 32;
 
@@ -529,7 +529,7 @@ function getAccounts(cb) {
 		cb(accounts);
 	});
 }
-function getBallots(web3, func, acc, contractAddress, cb) {
+function getBallots(web3, func, acc, contractAddress, abi, cb) {
 	SHA3Encrypt(web3, func, function(funcEncode) {
 		var funcEncodePart = funcEncode.substring(0,10);
 
@@ -560,71 +560,71 @@ function getBallots(web3, func, acc, contractAddress, cb) {
 			var ballotDataCount = 12;
 			for (var i = 0; i < ballotsArray.length; i++) {
 				iasync.push(0);
-				getBallotMemo(web3, acc, ballotsArray[i], i, contractAddress, function(_i, resp) {
+				getBallotMemo(web3, acc, ballotsArray[i], i, contractAddress, abi, function(_i, resp) {
 					iasync[_i]++;
-					ballotsArrayOut = getBallotsPropertyCallback("memo", web3, contractAddress, resp, _i, iasync, ballotsArray, ballotDataCount, ballotsArrayOut, cb);
+					ballotsArrayOut = getBallotsPropertyCallback("memo", resp, _i, iasync, ballotsArray, ballotDataCount, ballotsArrayOut, cb);
 				});
 
-				ballotCreatedAt(web3, acc, ballotsArray[i], i, contractAddress, function(_i, resp) {
+				ballotCreatedAt(web3, acc, ballotsArray[i], i, contractAddress, abi, function(_i, resp) {
 					iasync[_i]++;
-					ballotsArrayOut = getBallotsPropertyCallback("createdAt", web3, contractAddress, resp, _i, iasync, ballotsArray, ballotDataCount, ballotsArrayOut, cb);
+					ballotsArrayOut = getBallotsPropertyCallback("createdAt", resp, _i, iasync, ballotsArray, ballotDataCount, ballotsArrayOut, cb);
 				});
 
-				getBallotVotingStart(web3, acc, ballotsArray[i], i, contractAddress, function(_i, resp) {
+				getBallotVotingStart(web3, acc, ballotsArray[i], i, contractAddress, abi, function(_i, resp) {
 					iasync[_i]++;
-					ballotsArrayOut = getBallotsPropertyCallback("votingStart", web3, contractAddress, resp, _i, iasync, ballotsArray, ballotDataCount, ballotsArrayOut, cb);
+					ballotsArrayOut = getBallotsPropertyCallback("votingStart", resp, _i, iasync, ballotsArray, ballotDataCount, ballotsArrayOut, cb);
 				});
 
-				getBallotVotingEnd(web3, acc, ballotsArray[i], i, contractAddress, function(_i, resp) {
+				getBallotVotingEnd(web3, acc, ballotsArray[i], i, contractAddress, abi, function(_i, resp) {
 					iasync[_i]++;
-					ballotsArrayOut = getBallotsPropertyCallback("votingEnd", web3, contractAddress, resp, _i, iasync, ballotsArray, ballotDataCount, ballotsArrayOut, cb);
+					ballotsArrayOut = getBallotsPropertyCallback("votingEnd", resp, _i, iasync, ballotsArray, ballotDataCount, ballotsArrayOut, cb);
 				});
 
-				getVotesFor(web3, acc, ballotsArray[i], i, contractAddress, function(_i, resp) {
+				getVotesFor(web3, acc, ballotsArray[i], i, contractAddress, abi, function(_i, resp) {
 					iasync[_i]++;
-					ballotsArrayOut = getBallotsPropertyCallback("votesFor", web3, contractAddress, resp, _i, iasync, ballotsArray, ballotDataCount, ballotsArrayOut, cb);
+					ballotsArrayOut = getBallotsPropertyCallback("votesFor", resp, _i, iasync, ballotsArray, ballotDataCount, ballotsArrayOut, cb);
 				});
 
-				getVotesAgainst(web3, acc, ballotsArray[i], i, contractAddress, function(_i, resp) {
+				getVotesAgainst(web3, acc, ballotsArray[i], i, contractAddress, abi, function(_i, resp) {
 					iasync[_i]++;
-					ballotsArrayOut = getBallotsPropertyCallback("votesAgainst", web3, contractAddress, resp, _i, iasync, ballotsArray, ballotDataCount, ballotsArrayOut, cb);
+					ballotsArrayOut = getBallotsPropertyCallback("votesAgainst", resp, _i, iasync, ballotsArray, ballotDataCount, ballotsArrayOut, cb);
 				});
 
-				getBallotAction(web3, acc, ballotsArray[i], i, contractAddress, function(_i, resp) {
+				getBallotAction(web3, acc, ballotsArray[i], i, contractAddress, abi, function(_i, resp) {
 					iasync[_i]++;
-					ballotsArrayOut = getBallotsPropertyCallback("action", web3, contractAddress, resp, _i, iasync, ballotsArray, ballotDataCount, ballotsArrayOut, cb);
+					ballotsArrayOut = getBallotsPropertyCallback("action", resp, _i, iasync, ballotsArray, ballotDataCount, ballotsArrayOut, cb);
 				});
 
-				ballotIsVoted(web3, acc, ballotsArray[i], i, contractAddress, function(_i, resp) {
+				ballotIsVoted(web3, acc, ballotsArray[i], i, contractAddress, abi, function(_i, resp) {
 					iasync[_i]++;
-					ballotsArrayOut = getBallotsPropertyCallback("voted", web3, contractAddress, resp, _i, iasync, ballotsArray, ballotDataCount, ballotsArrayOut, cb);
+					ballotsArrayOut = getBallotsPropertyCallback("voted", resp, _i, iasync, ballotsArray, ballotDataCount, ballotsArrayOut, cb);
 				});
 
-				getBallotMiningKey(web3, acc, ballotsArray[i], i, contractAddress, function(_i, resp) {
+				getBallotMiningKey(web3, acc, ballotsArray[i], i, contractAddress, abi, function(_i, resp) {
 					iasync[_i]++;
-					ballotsArrayOut = getBallotsPropertyCallback("miningKey", web3, contractAddress, resp, _i, iasync, ballotsArray, ballotDataCount, ballotsArrayOut, cb);
+					ballotsArrayOut = getBallotsPropertyCallback("miningKey", resp, _i, iasync, ballotsArray, ballotDataCount, ballotsArrayOut, cb);
 				});
 
-				getBallotAffectedKey(web3, acc, ballotsArray[i], i, contractAddress, function(_i, resp) {
+				getBallotAffectedKey(web3, acc, ballotsArray[i], i, contractAddress, abi, function(_i, resp) {
 					iasync[_i]++;
-					ballotsArrayOut = getBallotsPropertyCallback("affectedKey", web3, contractAddress, resp, _i, iasync, ballotsArray, ballotDataCount, ballotsArrayOut, cb);
+					ballotsArrayOut = getBallotsPropertyCallback("affectedKey", resp, _i, iasync, ballotsArray, ballotDataCount, ballotsArrayOut, cb);
 				});
 
-				getBallotAffectedKeyType(web3, acc, ballotsArray[i], i, contractAddress, function(_i, resp) {
+				getBallotAffectedKeyType(web3, acc, ballotsArray[i], i, contractAddress, abi, function(_i, resp) {
 					iasync[_i]++;
-					ballotsArrayOut = getBallotsPropertyCallback("affectedKeyType", web3, contractAddress, resp, _i, iasync, ballotsArray, ballotDataCount, ballotsArrayOut, cb);
+					ballotsArrayOut = getBallotsPropertyCallback("affectedKeyType", resp, _i, iasync, ballotsArray, ballotDataCount, ballotsArrayOut, cb);
 				});
 
-				getBallotOwner(web3, acc, ballotsArray[i], i, contractAddress, function(_i, resp) {
+				getBallotOwner(web3, acc, ballotsArray[i], i, contractAddress, abi, function(_i, resp) {
 					iasync[_i]++;
-					ballotsArrayOut = getBallotsPropertyCallback("owner", web3, contractAddress, resp, _i, iasync, ballotsArray, ballotDataCount, ballotsArrayOut, cb);
+					ballotsArrayOut = getBallotsPropertyCallback("owner", resp, _i, iasync, ballotsArray, ballotDataCount, ballotsArrayOut, cb);
 				});
 			}
 		});
 	});
 }
 
-function getBallotsPropertyCallback(prop, web3, contractAddress, resp, _i, iasync, ballotsArray, ballotDataCount, ballotsArrayOut, cb) {
+function getBallotsPropertyCallback(prop, resp, _i, iasync, ballotsArray, ballotDataCount, ballotsArrayOut, cb) {
 	if (!ballotsArrayOut[_i]) {
 		var ballot = {};
 		ballot[ballotsArray[_i]] = {};
@@ -650,132 +650,132 @@ function getBallotsPropertyCallback(prop, web3, contractAddress, resp, _i, iasyn
 		return false;
 	} else return ballotsArrayOut;
 }
-function getBallotMemo(web3, acc, ballotID, i, contractAddr, cb) {
+function getBallotMemo(web3, acc, ballotID, i, contractAddr, abi, cb) {
 	var func = "getBallotMemo(uint256)";
 	getContractStringDataFromAddressKey(web3, acc, func, ballotID, i, contractAddr, cb);
 }
 
-function ballotCreatedAt(web3, acc, ballotID, i, contractAddr, cb) {
+function ballotCreatedAt(web3, acc, ballotID, i, contractAddr, abi, cb) {
 	var func = "ballotCreatedAt(uint256)";
 	getContractIntDataFromAddressKey(web3, acc, func, ballotID, i, contractAddr, cb);
 }
 
-function getBallotVotingStart(web3, acc, ballotID, i, contractAddr, cb) {
+function getBallotVotingStart(web3, acc, ballotID, i, contractAddr, abi, cb) {
 	var func = "getBallotVotingStart(uint256)";
 	getContractIntDataFromAddressKey(web3, acc, func, ballotID, i, contractAddr, cb);
 }
 
-function getBallotVotingEnd(web3, acc, ballotID, i, contractAddr, cb) {
+function getBallotVotingEnd(web3, acc, ballotID, i, contractAddr, abi, cb) {
 	var func = "getBallotVotingEnd(uint256)";
 	getContractIntDataFromAddressKey(web3, acc, func, ballotID, i, contractAddr, cb);
 }
 
-function getVotesFor(web3, acc, ballotID, i, contractAddr, cb) {
+function getVotesFor(web3, acc, ballotID, i, contractAddr, abi, cb) {
 	var func = "getVotesFor(uint256)";
 	getContractIntDataFromAddressKey(web3, acc, func, ballotID, i, contractAddr, cb);
 }
 
-function getVotesAgainst(web3, acc, ballotID, i, contractAddr, cb) {
+function getVotesAgainst(web3, acc, ballotID, i, contractAddr, abi, cb) {
 	var func = "getVotesAgainst(uint256)";
 	getContractIntDataFromAddressKey(web3, acc, func, ballotID, i, contractAddr, cb);
 }
 
-function getBallotAction(web3, acc, ballotID, i, contractAddr, cb) {
+function getBallotAction(web3, acc, ballotID, i, contractAddr, abi, cb) {
 	var func = "getBallotAction(uint256)";
 	getContractIntDataFromAddressKey(web3, acc, func, ballotID, i, contractAddr, cb);
 }
 
-function ballotIsVoted(web3, acc, ballotID, i, contractAddr, cb) {
+function ballotIsVoted(web3, acc, ballotID, i, contractAddr, abi, cb) {
 	var func = "ballotIsVoted(uint256)";
 	getContractIntDataFromAddressKey(web3, acc, func, ballotID, i, contractAddr, cb);
 }
 
-function getBallotMiningKey(web3, acc, ballotID, i, contractAddr, cb) {
+function getBallotMiningKey(web3, acc, ballotID, i, contractAddr, abi, cb) {
 	var func = "getBallotMiningKey(uint256)";
 	getContractAddressDataFromAddressKey(web3, acc, func, ballotID, i, contractAddr, cb);
 }
 
-function getBallotAffectedKey(web3, acc, ballotID, i, contractAddr, cb) {
+function getBallotAffectedKey(web3, acc, ballotID, i, contractAddr, abi, cb) {
 	var func = "getBallotAffectedKey(uint256)";
 	getContractAddressDataFromAddressKey(web3, acc, func, ballotID, i, contractAddr, cb);
 }
 
-function getBallotAffectedKeyType(web3, acc, ballotID, i, contractAddr, cb) {
+function getBallotAffectedKeyType(web3, acc, ballotID, i, contractAddr, abi, cb) {
 	var func = "getBallotAffectedKeyType(uint256)";
 	getContractIntDataFromAddressKey(web3, acc, func, ballotID, i, contractAddr, cb);
 }
 
-function getBallotOwner(web3, acc, ballotID, i, contractAddr, cb) {
+function getBallotOwner(web3, acc, ballotID, i, contractAddr, abi, cb) {
 	var func = "getBallotOwner(uint256)";
 	getContractStringDataFromAddressKey(web3, acc, func, ballotID, i, contractAddr, cb);
 }
 
-function getBallotData(web3, acc, ballotID, contractAddress, cb) {
+function getBallotData(web3, acc, ballotID, config, cb) {
 	var iasync = 0;
 	var ballotDataCount = 12;
 	var ballot = {};
-	getBallotMemo(web3, acc, ballotID, null, contractAddress, function(_i, resp) {
+	getBallotMemo(web3, acc, ballotID, null, config.contractAddress, config.abi, function(_i, resp) {
 		iasync++;
-		ballot = getBallotPropertyCallback("memo", web3, contractAddress, ballotID, resp, iasync, ballot, ballotDataCount, cb);
+		ballot = getBallotPropertyCallback("memo", ballotID, resp, iasync, ballot, ballotDataCount, cb);
 	});
 
-	ballotCreatedAt(web3, acc, ballotID, null, contractAddress, function(_i, resp) {
+	ballotCreatedAt(web3, acc, ballotID, null, config.contractAddress, config.abi, function(_i, resp) {
 		iasync++;
-		ballot = getBallotPropertyCallback("createdAt", web3, contractAddress, ballotID, resp, iasync, ballot, ballotDataCount, cb);
+		ballot = getBallotPropertyCallback("createdAt", ballotID, resp, iasync, ballot, ballotDataCount, cb);
 	});
 
-	getBallotVotingStart(web3, acc, ballotID, null, contractAddress, function(_i, resp) {
+	getBallotVotingStart(web3, acc, ballotID, null, config.contractAddress, config.abi, function(_i, resp) {
 		iasync++;
-		ballot = getBallotPropertyCallback("votingStart", web3, contractAddress, ballotID, resp, iasync, ballot, ballotDataCount, cb);
+		ballot = getBallotPropertyCallback("votingStart", ballotID, resp, iasync, ballot, ballotDataCount, cb);
 	});
 
-	getBallotVotingEnd(web3, acc, ballotID, null, contractAddress, function(_i, resp) {
+	getBallotVotingEnd(web3, acc, ballotID, null, config.contractAddress, config.abi, function(_i, resp) {
 		iasync++;
-		ballot = getBallotPropertyCallback("votingEnd", web3, contractAddress, ballotID, resp, iasync, ballot, ballotDataCount, cb);
+		ballot = getBallotPropertyCallback("votingEnd", ballotID, resp, iasync, ballot, ballotDataCount, cb);
 	});
 
-	getVotesFor(web3, acc, ballotID, null, contractAddress, function(_i, resp) {
+	getVotesFor(web3, acc, ballotID, null, config.contractAddress, config.abi, function(_i, resp) {
 		iasync++;
-		ballot = getBallotPropertyCallback("votesFor", web3, contractAddress, ballotID, resp, iasync, ballot, ballotDataCount, cb);
+		ballot = getBallotPropertyCallback("votesFor", ballotID, resp, iasync, ballot, ballotDataCount, cb);
 	});
 
-	getVotesAgainst(web3, acc, ballotID, null, contractAddress, function(_i, resp) {
+	getVotesAgainst(web3, acc, ballotID, null, config.contractAddress, config.abi, function(_i, resp) {
 		iasync++;
-		ballot = getBallotPropertyCallback("votesAgainst", web3, contractAddress, ballotID, resp, iasync, ballot, ballotDataCount, cb);
+		ballot = getBallotPropertyCallback("votesAgainst", ballotID, resp, iasync, ballot, ballotDataCount, cb);
 	});
 
-	getBallotAction(web3, acc, ballotID, null, contractAddress, function(_i, resp) {
+	getBallotAction(web3, acc, ballotID, null, config.contractAddress, config.abi, function(_i, resp) {
 		iasync++;
-		ballot = getBallotPropertyCallback("action", web3, contractAddress, ballotID, resp, iasync, ballot, ballotDataCount, cb);
+		ballot = getBallotPropertyCallback("action", ballotID, resp, iasync, ballot, ballotDataCount, cb);
 	});
 
-	ballotIsVoted(web3, acc, ballotID, null, contractAddress, function(_i, resp) {
+	ballotIsVoted(web3, acc, ballotID, null, config.contractAddress, config.abi, function(_i, resp) {
 		iasync++;
-		ballot = getBallotPropertyCallback("voted", web3, contractAddress, ballotID, resp, iasync, ballot, ballotDataCount, cb);
+		ballot = getBallotPropertyCallback("voted", ballotID, resp, iasync, ballot, ballotDataCount, cb);
 	});
 
-	getBallotMiningKey(web3, acc, ballotID, null, contractAddress, function(_i, resp) {
+	getBallotMiningKey(web3, acc, ballotID, null, config.contractAddress, config.abi, function(_i, resp) {
 		iasync++;
-		ballot = getBallotPropertyCallback("miningKey", web3, contractAddress, ballotID, resp, iasync, ballot, ballotDataCount, cb);
+		ballot = getBallotPropertyCallback("miningKey", ballotID, resp, iasync, ballot, ballotDataCount, cb);
 	});
 
-	getBallotAffectedKey(web3, acc, ballotID, null, contractAddress, function(_i, resp) {
+	getBallotAffectedKey(web3, acc, ballotID, null, config.contractAddress, config.abi, function(_i, resp) {
 		iasync++;
-		ballot = getBallotPropertyCallback("affectedKey", web3, contractAddress, ballotID, resp, iasync, ballot, ballotDataCount, cb);
+		ballot = getBallotPropertyCallback("affectedKey", ballotID, resp, iasync, ballot, ballotDataCount, cb);
 	});
 
-	getBallotAffectedKeyType(web3, acc, ballotID, null, contractAddress, function(_i, resp) {
+	getBallotAffectedKeyType(web3, acc, ballotID, null, config.contractAddress, config.abi, function(_i, resp) {
 		iasync++;
-		ballot = getBallotPropertyCallback("affectedKeyType", web3, contractAddress, ballotID, resp, iasync, ballot, ballotDataCount, cb);
+		ballot = getBallotPropertyCallback("affectedKeyType", ballotID, resp, iasync, ballot, ballotDataCount, cb);
 	});
 
-	getBallotOwner(web3, acc, ballotID, null, contractAddress, function(_i, resp) {
+	getBallotOwner(web3, acc, ballotID, null, config.contractAddress, config.abi, function(_i, resp) {
 		iasync++;
-		ballot = getBallotPropertyCallback("owner", web3, contractAddress, ballotID, resp, iasync, ballot, ballotDataCount, cb);
+		ballot = getBallotPropertyCallback("owner", ballotID, resp, iasync, ballot, ballotDataCount, cb);
 	});
 }
 
-function getBallotPropertyCallback(prop, web3, contractAddress, ballotID, resp, iasync, ballot, ballotDataCount, cb) {
+function getBallotPropertyCallback(prop, ballotID, resp, iasync, ballot, ballotDataCount, cb) {
 	if (Object.keys(ballot).length == 0) {
 		ballot[ballotID] = {};
 		ballot[ballotID][prop] = resp;
@@ -786,11 +786,11 @@ function getBallotPropertyCallback(prop, web3, contractAddress, ballotID, resp, 
 		return false;
 	} else return ballot;
 }
-function getBallotView(acc, ballotID, ballotPropsObj, isVotingEnabled, web3, contractAddress, cb) {
+function getBallotView(acc, ballotID, ballotPropsObj, isVotingEnabled, web3, config, cb) {
   if (ballotPropsObj) {
     return ballotViewObject(ballotID, ballotPropsObj, isVotingEnabled);
   } else {
-    getBallotData(web3, acc, ballotID, contractAddress, function(ballotPropsObj) {
+    getBallotData(web3, acc, ballotID, config, function(ballotPropsObj) {
       cb(ballotViewObject(ballotID, ballotPropsObj, isVotingEnabled));
     });
   }
@@ -972,18 +972,19 @@ function startDapp(web3, isOraclesNetwork) {
 
 		getAccounts(async function(accounts) {
 			let config = await getConfig()
-			getConfigCallBack(web3, accounts, config.contractAddress);	
+			getConfigCallBack(web3, accounts, config);	
 		});
 
 		//getting of config callback
-		function getConfigCallBack(web3, accounts, contractAddress) {
+		function getConfigCallBack(web3, accounts, config) {
 			//checks if chosen account is valid voting key
 			if (accounts.length == 1) {
 				var possiblePayoutKey = accounts[0];
 				checkVotingKey(web3,
 				"checkVotingKeyValidity(address)", 
 				possiblePayoutKey,
-				contractAddress,
+				config.contractAddress,
+				config.abi,
 				function(_isActive) {
 					_isActive = !!+_isActive;
 					if (!_isActive) {
@@ -1013,10 +1014,11 @@ function startDapp(web3, isOraclesNetwork) {
 				getBallots(web3, 
 					"getBallots()", 
 					votingKey,
-					contractAddress,
+					config.contractAddress,
+					config.abi,
 					function(_ballotsArray) {
 						ballotsArrayFiltered = _ballotsArray;
-						showBallotsPage(_ballotsArray, web3, contractAddress);
+						showBallotsPage(_ballotsArray, web3, config);
 					}
 				);
 
@@ -1027,15 +1029,15 @@ function startDapp(web3, isOraclesNetwork) {
 					if ($(this).hasClass("nav-i_actual")) {
 						$(".nav-i").removeClass("nav-i_active");
 						$(this).addClass("nav-i_active");
-						getBallotsList(web3, contractAddress);
+						getBallotsList(web3, config);
 					} else if ($(this).hasClass("nav-i_unanswered")) {
 						$(".nav-i").removeClass("nav-i_active");
 						$(this).addClass("nav-i_active");
-						getBallotsList(web3, contractAddress, {filter: "unanswered"});
+						getBallotsList(web3, config, {filter: "unanswered"});
 					} else if ($(this).hasClass("nav-i_expired")) {
 						$(".nav-i").removeClass("nav-i_active");
 						$(this).addClass("nav-i_active");
-						getBallotsList(web3, contractAddress, {filter: "expired"});
+						getBallotsList(web3, config, {filter: "expired"});
 					}
 				});
 
@@ -1044,7 +1046,7 @@ function startDapp(web3, isOraclesNetwork) {
 					var searchInput = $(this).val();
 					var ballotsArrayFiltered = filterBallots(searchInput);
 					$(".container.vote").empty();
-					showBallotsPage(ballotsArrayFiltered, web3, contractAddress);
+					showBallotsPage(ballotsArrayFiltered, web3, config);
 				});
 			});
 
@@ -1071,7 +1073,7 @@ function startDapp(web3, isOraclesNetwork) {
 					$(".new-ballot-add").html("Continue");
 				} else {
 					ballotsNavPan();
-					getBallotsList(web3, contractAddress);
+					getBallotsList(web3, config);
 				}
 			});
 
@@ -1137,7 +1139,7 @@ function startDapp(web3, isOraclesNetwork) {
 						}
 
 						if (!addAction) {
-							addBallotClick(web3, ballotViewObj, null, contractAddress);
+							addBallotClick(web3, ballotViewObj, null, config);
 						} else {
 							var validatorViewObj = {
 								miningKey: $("#mining-key").val(),
@@ -1148,7 +1150,7 @@ function startDapp(web3, isOraclesNetwork) {
 								licenseID: $("#license-id").val(),
 								licenseExpiredAt: new Date($("#license-expiration").val()).getTime() / 1000,
 							};
-							addBallotClick(web3, ballotViewObj, validatorViewObj, contractAddress);
+							addBallotClick(web3, ballotViewObj, validatorViewObj, config);
 						}
 					});
 				});
@@ -1156,20 +1158,21 @@ function startDapp(web3, isOraclesNetwork) {
 		}
 
 		//triggers after clicking "Add Ballot" button
-		function addBallotClick(web3, ballotViewObj, validatorViewObj, contractAddress) {
+		function addBallotClick(web3, ballotViewObj, validatorViewObj, config) {
 			addBallot(web3, 
 				"addBallot(uint256,address,address,address,uint256,bool,string)",
 				ballotViewObj,
 				votingKey,
-				contractAddress,
+				config.contractAddress,
+				config.abi,
 				function(txHash, err) {
-					addBallotCallBack(err, web3, txHash, ballotViewObj.addAction, validatorViewObj, contractAddress);
+					addBallotCallBack(err, web3, txHash, ballotViewObj.addAction, validatorViewObj, config);
 				}
 			);
 		}
 
 		//Adding of ballot to contract callback
-		function addBallotCallBack(err, web3, txHash, addAction, validatorViewObj, contractAddress) {
+		function addBallotCallBack(err, web3, txHash, addAction, validatorViewObj, config) {
 			if (err) {
 				$(".loading-container").hide();
 				showAlert(err, err.message);
@@ -1186,16 +1189,17 @@ function startDapp(web3, isOraclesNetwork) {
 					"addValidator(address,uint256,uint256,uint256,string,string,string)",
 					validatorViewObj,
 					votingKey,
-					contractAddress,
+					config.contractAddress,
+					config.abi,
 					function(txHash, err) {
-						addValidatorCallBack(err, txHash, web3, contractAddress);
+						addValidatorCallBack(err, txHash, web3, config);
 					}
 				);
 			}
 		}
 
 		//Adding of validator to contract callback
-		function addValidatorCallBack(err, txHash, web3, contractAddress) {
+		function addValidatorCallBack(err, txHash, web3, config) {
 			if (err) {
 				$(".loading-container").hide();
 				showAlert(err, err.message);
@@ -1206,12 +1210,12 @@ function startDapp(web3, isOraclesNetwork) {
 				$(".loading-container").hide();
 				//$(".back").trigger("click");
 				ballotsNavPan();
-				getBallotsList(web3, contractAddress);
+				getBallotsList(web3, config);
 			});
 		}
 
 		//shows page with list of ballots
-		function showBallotsPage(_ballotsArray, web3, contractAddress) {
+		function showBallotsPage(_ballotsArray, web3, config) {
 			for(var i = 0; i < _ballotsArray.length; i++) {
 				var ballot = _ballotsArray[i];
 				if (ballot) {
@@ -1226,26 +1230,26 @@ function startDapp(web3, isOraclesNetwork) {
 
 			//vote now button onclick event
 			$(".vote-now").on("click", function() {
-				getBallotView(votingKey, $(this).attr("ballot-id"), null, true, web3, contractAddress, function(ballotView) {
-					showSingleBallotPage(ballotView, web3, contractAddress);
+				getBallotView(votingKey, $(this).attr("ballot-id"), null, true, web3, config, function(ballotView) {
+					showSingleBallotPage(ballotView, web3, config);
 				});
 			});
 		}
 
 		//shows page with single ballot
-		function showSingleBallotPage(ballotView, web3, contractAddress) {
+		function showSingleBallotPage(ballotView, web3, config) {
 			$(".container.vote").empty();
 			$(".container.vote").append(ballotView);
 			newBallotNavPan();
 
 			//vote button onclick event
 			$(".vote-button").on("click", function(e) {
-				voteButtonClick(web3, contractAddress, e, $(this));
+				voteButtonClick(web3, config, e, $(this));
 			});
 		}
 
 		//triggers after .vote-button clicked
-		function voteButtonClick(web3, contractAddress, e, $this) {
+		function voteButtonClick(web3, config, e, $this) {
 			$(".loading-container").show();
 			var voteFor = $this.hasClass("vote-rating-yes")?true:false;
 
@@ -1256,7 +1260,8 @@ function startDapp(web3, isOraclesNetwork) {
 				ballotID,
 				voteFor,
 				votingKey,
-				contractAddress,
+				config.contractAddress,
+				config.abi,
 				function(txHash, err) {
 					if (err) {
 						$(".loading-container").hide();
@@ -1286,19 +1291,20 @@ function startDapp(web3, isOraclesNetwork) {
 			$(".back").addClass("hidden");
 		}
 
-		function getBallotsList(web3, contractAddress, filterObj) {
+		function getBallotsList(web3, config, filterObj) {
 			$(".container.new-ballot").addClass("hidden");
 			$(".container.vote").removeClass("hidden");
 			$(".container.vote").empty();
 			getBallots(web3, 
 				"getBallots()",
 				votingKey,
-				contractAddress,
+				config.contractAddress,
+				config.abi,
 				function(_ballotsArray) {
 					$(".loading-container").hide();
 					if (!filterObj) {
 						ballotsArrayFiltered = _ballotsArray;
-						showBallotsPage(ballotsArrayFiltered, web3, contractAddress);
+						showBallotsPage(ballotsArrayFiltered, web3, config);
 						return;
 					}
 
@@ -1312,7 +1318,7 @@ function startDapp(web3, isOraclesNetwork) {
 							}
 						}
 						ballotsArrayFiltered = _ballotsArrayFiltered;
-						showBallotsPage(ballotsArrayFiltered, web3, contractAddress);
+						showBallotsPage(ballotsArrayFiltered, web3, config);
 					} else if (filterObj.filter == "unanswered") {
 						var _ballotsArrayFiltered = [];
 						for (var i = 0; i < _ballotsArray.length; i++) {
@@ -1323,7 +1329,7 @@ function startDapp(web3, isOraclesNetwork) {
 							}
 						}
 						ballotsArrayFiltered = _ballotsArrayFiltered;
-						showBallotsPage(ballotsArrayFiltered, web3, contractAddress);
+						showBallotsPage(ballotsArrayFiltered, web3, config);
 					}
 				}
 			);

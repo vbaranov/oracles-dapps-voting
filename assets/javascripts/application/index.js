@@ -10,18 +10,19 @@ function startDapp(web3, isOraclesNetwork) {
 
 		getAccounts(async function(accounts) {
 			let config = await getConfig()
-			getConfigCallBack(web3, accounts, config.contractAddress);	
+			getConfigCallBack(web3, accounts, config);	
 		});
 
 		//getting of config callback
-		function getConfigCallBack(web3, accounts, contractAddress) {
+		function getConfigCallBack(web3, accounts, config) {
 			//checks if chosen account is valid voting key
 			if (accounts.length == 1) {
 				var possiblePayoutKey = accounts[0];
 				checkVotingKey(web3,
 				"checkVotingKeyValidity(address)", 
 				possiblePayoutKey,
-				contractAddress,
+				config.contractAddress,
+				config.abi,
 				function(_isActive) {
 					_isActive = !!+_isActive;
 					if (!_isActive) {
@@ -51,10 +52,11 @@ function startDapp(web3, isOraclesNetwork) {
 				getBallots(web3, 
 					"getBallots()", 
 					votingKey,
-					contractAddress,
+					config.contractAddress,
+					config.abi,
 					function(_ballotsArray) {
 						ballotsArrayFiltered = _ballotsArray;
-						showBallotsPage(_ballotsArray, web3, contractAddress);
+						showBallotsPage(_ballotsArray, web3, config);
 					}
 				);
 
@@ -65,15 +67,15 @@ function startDapp(web3, isOraclesNetwork) {
 					if ($(this).hasClass("nav-i_actual")) {
 						$(".nav-i").removeClass("nav-i_active");
 						$(this).addClass("nav-i_active");
-						getBallotsList(web3, contractAddress);
+						getBallotsList(web3, config);
 					} else if ($(this).hasClass("nav-i_unanswered")) {
 						$(".nav-i").removeClass("nav-i_active");
 						$(this).addClass("nav-i_active");
-						getBallotsList(web3, contractAddress, {filter: "unanswered"});
+						getBallotsList(web3, config, {filter: "unanswered"});
 					} else if ($(this).hasClass("nav-i_expired")) {
 						$(".nav-i").removeClass("nav-i_active");
 						$(this).addClass("nav-i_active");
-						getBallotsList(web3, contractAddress, {filter: "expired"});
+						getBallotsList(web3, config, {filter: "expired"});
 					}
 				});
 
@@ -82,7 +84,7 @@ function startDapp(web3, isOraclesNetwork) {
 					var searchInput = $(this).val();
 					var ballotsArrayFiltered = filterBallots(searchInput);
 					$(".container.vote").empty();
-					showBallotsPage(ballotsArrayFiltered, web3, contractAddress);
+					showBallotsPage(ballotsArrayFiltered, web3, config);
 				});
 			});
 
@@ -109,7 +111,7 @@ function startDapp(web3, isOraclesNetwork) {
 					$(".new-ballot-add").html("Continue");
 				} else {
 					ballotsNavPan();
-					getBallotsList(web3, contractAddress);
+					getBallotsList(web3, config);
 				}
 			});
 
@@ -175,7 +177,7 @@ function startDapp(web3, isOraclesNetwork) {
 						}
 
 						if (!addAction) {
-							addBallotClick(web3, ballotViewObj, null, contractAddress);
+							addBallotClick(web3, ballotViewObj, null, config);
 						} else {
 							var validatorViewObj = {
 								miningKey: $("#mining-key").val(),
@@ -186,7 +188,7 @@ function startDapp(web3, isOraclesNetwork) {
 								licenseID: $("#license-id").val(),
 								licenseExpiredAt: new Date($("#license-expiration").val()).getTime() / 1000,
 							};
-							addBallotClick(web3, ballotViewObj, validatorViewObj, contractAddress);
+							addBallotClick(web3, ballotViewObj, validatorViewObj, config);
 						}
 					});
 				});
@@ -194,20 +196,21 @@ function startDapp(web3, isOraclesNetwork) {
 		}
 
 		//triggers after clicking "Add Ballot" button
-		function addBallotClick(web3, ballotViewObj, validatorViewObj, contractAddress) {
+		function addBallotClick(web3, ballotViewObj, validatorViewObj, config) {
 			addBallot(web3, 
 				"addBallot(uint256,address,address,address,uint256,bool,string)",
 				ballotViewObj,
 				votingKey,
-				contractAddress,
+				config.contractAddress,
+				config.abi,
 				function(txHash, err) {
-					addBallotCallBack(err, web3, txHash, ballotViewObj.addAction, validatorViewObj, contractAddress);
+					addBallotCallBack(err, web3, txHash, ballotViewObj.addAction, validatorViewObj, config);
 				}
 			);
 		}
 
 		//Adding of ballot to contract callback
-		function addBallotCallBack(err, web3, txHash, addAction, validatorViewObj, contractAddress) {
+		function addBallotCallBack(err, web3, txHash, addAction, validatorViewObj, config) {
 			if (err) {
 				$(".loading-container").hide();
 				showAlert(err, err.message);
@@ -224,16 +227,17 @@ function startDapp(web3, isOraclesNetwork) {
 					"addValidator(address,uint256,uint256,uint256,string,string,string)",
 					validatorViewObj,
 					votingKey,
-					contractAddress,
+					config.contractAddress,
+					config.abi,
 					function(txHash, err) {
-						addValidatorCallBack(err, txHash, web3, contractAddress);
+						addValidatorCallBack(err, txHash, web3, config);
 					}
 				);
 			}
 		}
 
 		//Adding of validator to contract callback
-		function addValidatorCallBack(err, txHash, web3, contractAddress) {
+		function addValidatorCallBack(err, txHash, web3, config) {
 			if (err) {
 				$(".loading-container").hide();
 				showAlert(err, err.message);
@@ -244,12 +248,12 @@ function startDapp(web3, isOraclesNetwork) {
 				$(".loading-container").hide();
 				//$(".back").trigger("click");
 				ballotsNavPan();
-				getBallotsList(web3, contractAddress);
+				getBallotsList(web3, config);
 			});
 		}
 
 		//shows page with list of ballots
-		function showBallotsPage(_ballotsArray, web3, contractAddress) {
+		function showBallotsPage(_ballotsArray, web3, config) {
 			for(var i = 0; i < _ballotsArray.length; i++) {
 				var ballot = _ballotsArray[i];
 				if (ballot) {
@@ -264,26 +268,26 @@ function startDapp(web3, isOraclesNetwork) {
 
 			//vote now button onclick event
 			$(".vote-now").on("click", function() {
-				getBallotView(votingKey, $(this).attr("ballot-id"), null, true, web3, contractAddress, function(ballotView) {
-					showSingleBallotPage(ballotView, web3, contractAddress);
+				getBallotView(votingKey, $(this).attr("ballot-id"), null, true, web3, config, function(ballotView) {
+					showSingleBallotPage(ballotView, web3, config);
 				});
 			});
 		}
 
 		//shows page with single ballot
-		function showSingleBallotPage(ballotView, web3, contractAddress) {
+		function showSingleBallotPage(ballotView, web3, config) {
 			$(".container.vote").empty();
 			$(".container.vote").append(ballotView);
 			newBallotNavPan();
 
 			//vote button onclick event
 			$(".vote-button").on("click", function(e) {
-				voteButtonClick(web3, contractAddress, e, $(this));
+				voteButtonClick(web3, config, e, $(this));
 			});
 		}
 
 		//triggers after .vote-button clicked
-		function voteButtonClick(web3, contractAddress, e, $this) {
+		function voteButtonClick(web3, config, e, $this) {
 			$(".loading-container").show();
 			var voteFor = $this.hasClass("vote-rating-yes")?true:false;
 
@@ -294,7 +298,8 @@ function startDapp(web3, isOraclesNetwork) {
 				ballotID,
 				voteFor,
 				votingKey,
-				contractAddress,
+				config.contractAddress,
+				config.abi,
 				function(txHash, err) {
 					if (err) {
 						$(".loading-container").hide();
@@ -324,19 +329,20 @@ function startDapp(web3, isOraclesNetwork) {
 			$(".back").addClass("hidden");
 		}
 
-		function getBallotsList(web3, contractAddress, filterObj) {
+		function getBallotsList(web3, config, filterObj) {
 			$(".container.new-ballot").addClass("hidden");
 			$(".container.vote").removeClass("hidden");
 			$(".container.vote").empty();
 			getBallots(web3, 
 				"getBallots()",
 				votingKey,
-				contractAddress,
+				config.contractAddress,
+				config.abi,
 				function(_ballotsArray) {
 					$(".loading-container").hide();
 					if (!filterObj) {
 						ballotsArrayFiltered = _ballotsArray;
-						showBallotsPage(ballotsArrayFiltered, web3, contractAddress);
+						showBallotsPage(ballotsArrayFiltered, web3, config);
 						return;
 					}
 
@@ -350,7 +356,7 @@ function startDapp(web3, isOraclesNetwork) {
 							}
 						}
 						ballotsArrayFiltered = _ballotsArrayFiltered;
-						showBallotsPage(ballotsArrayFiltered, web3, contractAddress);
+						showBallotsPage(ballotsArrayFiltered, web3, config);
 					} else if (filterObj.filter == "unanswered") {
 						var _ballotsArrayFiltered = [];
 						for (var i = 0; i < _ballotsArray.length; i++) {
@@ -361,7 +367,7 @@ function startDapp(web3, isOraclesNetwork) {
 							}
 						}
 						ballotsArrayFiltered = _ballotsArrayFiltered;
-						showBallotsPage(ballotsArrayFiltered, web3, contractAddress);
+						showBallotsPage(ballotsArrayFiltered, web3, config);
 					}
 				}
 			);

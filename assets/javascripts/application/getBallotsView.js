@@ -1,8 +1,8 @@
-function getBallotView(acc, ballotID, ballotPropsObj, isVotingEnabled, web3, contractAddress, cb) {
+function getBallotView(acc, ballotID, ballotPropsObj, isVotingEnabled, web3, config, cb) {
   if (ballotPropsObj) {
     return ballotViewObject(ballotID, ballotPropsObj, isVotingEnabled);
   } else {
-    getBallotData(web3, acc, ballotID, contractAddress, function(ballotPropsObj) {
+    getBallotData(web3, acc, ballotID, config, function(ballotPropsObj) {
       cb(ballotViewObject(ballotID, ballotPropsObj, isVotingEnabled));
     });
   }
