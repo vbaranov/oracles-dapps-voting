@@ -1,4 +1,4 @@
-function addBallot(web3, func, ballotViewObj, address, contractAddr, cb) {
+function addBallot(web3, func, ballotViewObj, address, contractAddr, abi, cb) {
   console.log(ballotViewObj);
   var funcParamsNumber = 7;
   var standardLength = 32;

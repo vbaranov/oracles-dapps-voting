@@ -1,3 +1,12 @@
+function attachToContract(web3, abi, addr, cb) {
+  web3.eth.defaultAccount = web3.eth.accounts[0];
+  console.log("web3.eth.defaultAccount:" + web3.eth.defaultAccount);
+  
+  var contractInstance = new web3.eth.Contract(abi, addr);
+  
+  if (cb) cb(null, contractInstance);
+}
+
 function SHA3Encrypt(web3, str, cb) {
   var strEncode = web3.utils.sha3(str);
   cb(strEncode);

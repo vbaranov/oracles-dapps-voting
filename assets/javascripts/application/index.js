@@ -224,7 +224,6 @@ function startDapp(web3, isOraclesNetwork) {
 				});
 			} else {
 				addValidator(web3, 
-					"addValidator(address,uint256,uint256,uint256,string,string,string)",
 					validatorViewObj,
 					votingKey,
 					config.contractAddress,

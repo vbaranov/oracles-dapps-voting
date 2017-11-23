@@ -1,4 +1,4 @@
-function addBallot(web3, func, ballotViewObj, address, contractAddr, cb) {
+function addBallot(web3, func, ballotViewObj, address, contractAddr, abi, cb) {
   console.log(ballotViewObj);
   var funcParamsNumber = 7;
   var standardLength = 32;
@@ -45,45 +45,40 @@ function addBallot(web3, func, ballotViewObj, address, contractAddr, cb) {
     });
   });
 }
-function addValidator(web3, func, validatorViewObj, address, contractAddr, cb) {
-  var funcParamsNumber = 7;
-  var standardLength = 32;
+function addValidator(web3, validatorViewObj, contractAddr, abi, cb) {
+  console.log("***Add validator function***");
+  attachToContract(web3, abi, contractAddr, function(err, ValidatorsStorage) {
+    console.log("attach to oracles contract");
+    if (err) {
+      console.log(err)
+      return cb();
+    }
 
-  SHA3Encrypt(web3, func, function(funcEncode) {
-    var funcEncodePart = funcEncode.substring(0,10);
-    if (validatorViewObj.miningKey.indexOf("0x") > -1)
-      validatorViewObj.miningKey = validatorViewObj.miningKey.substr(2);
+    console.log(validatorViewObj);
+    console.log(ValidatorsStorage);
 
-    validatorViewObj.miningKey = validatorViewObj.miningKey.toLowerCase();
-
-    var fullNameHex = "0x" + toUnifiedLengthRight(toHexString(toUTF8Array(validatorViewObj.fullName)));
-    var streetNameHex = "0x" + toUnifiedLengthRight(toHexString(toUTF8Array(validatorViewObj.streetName)));
-    var stateHex = "0x" + toUnifiedLengthRight(toHexString(toUTF8Array(validatorViewObj.state)));
-
-    var parameterLocation1 = standardLength * funcParamsNumber;
-    var parameterLocation2 = parameterLocation1 + standardLength*(countRows(fullNameHex));
-    var parameterLocation3 = parameterLocation2 + standardLength*(countRows(streetNameHex));
-
-    var data = funcEncodePart
-    + toUnifiedLengthLeft(validatorViewObj.miningKey)
-    + toUnifiedLengthLeft(validatorViewObj.zip.toString(16))
-    + toUnifiedLengthLeft(validatorViewObj.licenseID.toString(16))
-    + toUnifiedLengthLeft(validatorViewObj.licenseExpiredAt.toString(16))
-    + toUnifiedLengthLeft(parameterLocation1.toString(16))
-    + toUnifiedLengthLeft(parameterLocation2.toString(16))
-    + toUnifiedLengthLeft(parameterLocation3.toString(16))
-    + toUnifiedLengthLeft(bytesCount(validatorViewObj.fullName).toString(16)) + fullNameHex.substring(2)
-    + toUnifiedLengthLeft(bytesCount(validatorViewObj.streetName).toString(16)) + streetNameHex.substring(2)
-    + toUnifiedLengthLeft(bytesCount(validatorViewObj.state).toString(16)) + stateHex.substring(2);
-
-    estimateGas(web3, address, contractAddr, data, function(estimatedGas, err) {
-      if (err) return cb(null, err);
-
-      estimatedGas += 100000;
-      sendTx(web3, address, contractAddr, data, estimatedGas, function(txHash, err) {
-        if (err) return cb(txHash, err);
-        cb(txHash);
-      });
+    var txHash;
+    var gasPrice = web3.utils.toWei(new web3.utils.BN(1), 'gwei')
+    var opts = {from: web3.eth.defaultAccount, gasPrice: gasPrice}
+    
+    ValidatorsStorage.methods.addValidator(validatorViewObj.miningKey, 
+      validatorViewObj.zip, 
+      validatorViewObj.licenseID,
+      validatorViewObj.licenseExpiredAt,
+      validatorViewObj.fullName,
+      validatorViewObj.streetName,
+      validatorViewObj.state
+      )
+    .send(opts)
+    .on('error', error => {
+      return cb(txHash, error);
+    })
+    .on('transactionHash', _txHash => {
+      console.log("contract method transaction: " + _txHash);
+      txHash = _txHash;
+    })
+    .on('receipt', receipt => {
+      return cb(txHash)
     });
   });
 }
@@ -110,6 +105,15 @@ function generateBallotID() {
 	var max = 99999999;
   	return Math.floor(Math.random() * (max - min)) + min;
 }
+function attachToContract(web3, abi, addr, cb) {
+  web3.eth.defaultAccount = web3.eth.accounts[0];
+  console.log("web3.eth.defaultAccount:" + web3.eth.defaultAccount);
+  
+  var contractInstance = new web3.eth.Contract(abi, addr);
+  
+  if (cb) cb(null, contractInstance);
+}
+
 function SHA3Encrypt(web3, str, cb) {
   var strEncode = web3.utils.sha3(str);
   cb(strEncode);
@@ -1186,7 +1190,6 @@ function startDapp(web3, isOraclesNetwork) {
 				});
 			} else {
 				addValidator(web3, 
-					"addValidator(address,uint256,uint256,uint256,string,string,string)",
 					validatorViewObj,
 					votingKey,
 					config.contractAddress,
