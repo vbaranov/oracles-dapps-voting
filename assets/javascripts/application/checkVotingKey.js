@@ -1,16 +1,16 @@
-function checkVotingKey(web3, func, key, contractAddr, abi, cb) {
-  var funcParamsNumber = 1;
-  var standardLength = 32;
+function checkVotingKey(web3, votingKey, contractAddr, abi, cb) {
+  attachToContract(web3, abi, contractAddr, function(err, oraclesContract) {
+    console.log("attach to oracles contract");
+    if (err) {
+      console.log(err)
+      return cb();
+    }
 
-  SHA3Encrypt(web3, func, function(funcEncode) {
-    var funcEncodePart = funcEncode.substring(0,10);
-
-    var data = funcEncodePart
-    + toUnifiedLengthLeft(key.substr(2));
-
-    call(web3, key, contractAddr, data, function(respHex) {
-      console.log(respHex);
-      cb(parseInt(respHex, 16));
-    });
-  });
+    oraclesContract.methods.checkVotingKey(votingKey).call(function(err, isActive) {
+      if (err) {
+        console.log(err)
+      }
+      cb(isActive);
+    })
+  })
 }
