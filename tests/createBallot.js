@@ -1,4 +1,9 @@
-const webdriver = require('selenium-webdriver');
+const utils = require("./utils/utils");
+const downloadRepo = require("./utils/downloadRepo");
+const Constants = require("./utils/constants");
+const constants = Constants.constants;
+const webdriver = require('selenium-webdriver'),
+      chrome = require('selenium-webdriver/chrome');
 require("chromedriver");
 
 const timeout = seconds => timeoutMs(seconds * 1000)
@@ -10,25 +15,31 @@ const METAMASK_EXTENSION_URL =
 main()
 
 async function main() {
-	//driver.get("chrome://extensions/");
-
-	let chromeCapabilities = webdriver.Capabilities.chrome();
-
-	let chromeOptions = {
-		'binary': '/Users/viktorbaranov/Documents/HintsProjects/BlockNotary/Oracles/poa-dapps-voting-myfork/tests',
-		'args': [],
-		'extensions': ['MetaMask_v3.14.1.crx']
+	let spec
+	try {
+	 spec = await utils.getSpec('sokol');
+	} catch (e) {
+		return console.log(e.message)
 	}
+	console.log(spec);
 
-	chromeCapabilities.set('chromeOptions', chromeOptions);
+	await downloadRepo(constants.contractsRepoName);
+	await downloadRepo(constants.scriptsRepoName);
 
-	var driver = new webdriver.Builder()
-	.forBrowser('chrome')
-	.withCapabilities(chromeCapabilities)
+	return;
+
+	let options = new chrome.Options();
+    options.addExtensions('./MetaMask_v3.14.1.crx');
+	options.addArguments('start-maximized');
+    options.addArguments('disable-popup-blocking');
+	let driver = new webdriver.Builder()
+	.withCapabilities(options.toCapabilities())
 	.build();
 
 
 	return;
+
+
 	// Open MetaMask popup in a new tab
 	driver.navigate().to(METAMASK_EXTENSION_URL);
 
