@@ -71,7 +71,7 @@
     "build-js": "node scripts/build.js",
     "build": "npm-run-all build-css build-js",
     "test": "node scripts/test.js --env=jsdom",
-    "test-setup": " npm run prepare-moc-node && npm run start-moc-node",
+    "test-setup": "npm run download-repos && prepare-contracts-repo && npm run prepare-moc-node && npm run start-moc-node",
     "download-repos": "node tests/downloadRepos.js",
     "prepare-contracts-repo": "cd ./tests/poa-network-consensus-contracts && npm i && bash ./make_flat.sh && ./node_modules/.bin/truffle compile",
     "prepare-moc-node": "node tests/prepareMoCNode",
