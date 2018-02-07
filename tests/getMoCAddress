@@ -1,9 +1,0 @@
-#!/bin/sh
-ext=.json
-t=
-for file in ../../keys/moc/*${ext};
-	do 
-		filename=${file##*/}
-		filename=${filename/${ext}/${t}}
-		echo 0x${filename}
-done

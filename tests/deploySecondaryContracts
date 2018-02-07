@@ -1,4 +1,0 @@
-#!/bin/sh
-moc=$(sh ../../getMoCAddress)
-cmd=PORT=8545 UNLOCKED_ADDRESS=${moc} node ./test-poa-setup.js
-echo ${cmd}
