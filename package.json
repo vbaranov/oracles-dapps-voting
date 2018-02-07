@@ -71,12 +71,12 @@
     "build-js": "node scripts/build.js",
     "build": "npm-run-all build-css build-js",
     "test": "node scripts/test.js --env=jsdom",
-    "test-setup": "npm run download-repos && npm run prepare-contracts-repo && npm run prepare-moc-node && npm run start-moc-node && npm run deploy-secondary-contracts && npm run kill-parity",
+    "test-setup": "npm run download-repos && npm run prepare-contracts-repo && npm run prepare-moc-node && npm run start-moc-node && npm run deploy-secondary-contracts",
     "download-repos": "node tests/downloadRepos.js",
     "prepare-contracts-repo": "cd ./tests/poa-network-consensus-contracts && npm i && bash ./make_flat.sh && ./node_modules/.bin/truffle compile",
     "prepare-moc-node": "node tests/prepareMoCNode",
     "start-moc-node": "parity --config ./tests/nodes/parity-moc/moc.toml &",
-    "deploy-secondary-contracts": "cd ./tests/poa-network-consensus-contracts/scripts/ && npm i && bash ../../deploySecondaryContracts",
+    "deploy-secondary-contracts": "cd ./tests/poa-network-consensus-contracts && ./node_modules/.bin/truffle deploy",
     "kill-parity": "kill -9 $(lsof -t -i:8545)"
   },
   "jest": {
