@@ -26,8 +26,15 @@ async function main() {
 
 	const privateKey = keythereum.recover(mocPassword, keyObject).toString('hex');
 
+	let spec
+	try {
+	 spec = await utils.getSpec('sokol');
+	} catch (e) {
+		return console.log(e.message)
+	}
+
 	utils.clearFolder(constants.mocKeysFolder);
-	utils.clearFolder(`constants.mocKeysFolder${spec.name}`);
+	utils.clearFolder(`${constants.masterNodeKeysFolder}${spec.name}`);
 	try { await saveToFile(keyStoreFileName, mocKeyStore) }
 	catch (err) { return console.log(err.message); }
 	console.log(`MoC keystore file ${moc} is generated to ${keyStoreFileName}`);
@@ -45,13 +52,6 @@ async function main() {
 	try { await saveToFile(passwordFileName, mocPassword) }
 	catch (err) { return console.log(err.message); }
 	console.log(`MoC password is generated to ${passwordFileName}`);
-
-	let spec
-	try {
-	 spec = await utils.getSpec('sokol');
-	} catch (e) {
-		return console.log(e.message)
-	}
 
 	utils.clearFolder(constants.masterNodeKeysFolder);
 	const masterNodeKeyStoreFolder = `${constants.masterNodeKeysFolder}${spec.name}`;
