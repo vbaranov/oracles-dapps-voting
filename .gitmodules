@@ -1,0 +1,8 @@
+[submodule "tests/poa-network-consensus-contracts"]
+	path = tests/poa-network-consensus-contracts
+	url = https://github.com/poanetwork/poa-network-consensus-contracts
+	branch = master
+[submodule "tests/poa-chain-spec"]
+	path = tests/poa-chain-spec
+	url = https://github.com/poanetwork/poa-chain-spec
+	branch = master

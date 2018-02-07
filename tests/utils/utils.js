@@ -47,7 +47,9 @@ let removeFolderRecursive = function(path) {
       if (fs.lstatSync(curPath).isDirectory()) { // recurse
         removeFolderRecursive(curPath);
       } else { // delete file
-        fs.unlinkSync(curPath);
+      	if (file != '.gitkeep') {
+        	fs.unlinkSync(curPath);
+    	}
       }
     });
     fs.rmdirSync(path);
